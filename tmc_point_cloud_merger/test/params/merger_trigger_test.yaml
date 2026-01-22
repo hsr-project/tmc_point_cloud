@@ -1,0 +1,21 @@
+merger_trigger_test:
+  ros__parameters:
+    valid_param_single:
+      topic1:
+        topic_name: "/camera0/points"
+    valid_param_multiple:
+      topic1:
+        topic_name: "/camera0/points"
+      topic2:
+        topic_name: "/camera1/points"
+    has_the_same_targets:
+      topic1:
+        topic_name: "/camera0/points"
+      topic2:
+        topic_name: "/camera0/points"
+    invalid_key:
+      test:
+        some_name: "/camera0/points"
+    empty:
+      test:
+        topic_name: ""

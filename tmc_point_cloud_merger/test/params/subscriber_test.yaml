@@ -1,0 +1,33 @@
+subscriber_test:
+  ros__parameters:
+    single_param:
+      topic_name: '/camera0/points'
+      stall_monitor_hz: 20.0
+      stall_timeout_sec: 1.0
+    topic_name_not_found:
+      stall_monitor_hz: 20.0
+      stall_timeout_sec: 1.0
+    topic_name_empty:
+      topic_name: ''
+      stall_monitor_hz: 20.0
+      stall_timeout_sec: 1.0
+    topic_name_invalid_type:
+      topic_name: 12345
+      stall_monitor_hz: 20.0
+      stall_timeout_sec: 1.0
+    stall_monitor_hz_not_found:
+      topic_name: '/camera0/points'
+      stall_timeout_sec: 1.0
+    stall_monitor_hz_small:
+      topic_name: '/camera0/points'
+      stall_monitor_hz: 0.0
+      stall_timeout_sec: 1.0
+    stall_timeout_sec_not_found:
+      topic_name: '/camera0/points'
+      stall_monitor_hz: 20.0
+    stall_timeout_sec_small:
+      topic_name: '/camera0/points'
+      stall_monitor_hz: 20.0
+      stall_timeout_sec: 0.0
+
+

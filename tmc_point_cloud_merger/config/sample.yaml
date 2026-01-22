@@ -1,0 +1,32 @@
+point_cloud_merger:
+  ros__parameters:
+    # 入力名と想定周期
+    # 想定周期で受信できているかどうかはモニターされている
+    # 想定周期を考慮してタイムアウトを設定すること
+    inputs:
+      input1:
+        topic_name: '/cloud0'
+        stall_monitor_hz: 20.0
+        stall_timeout_sec: 1.0
+      input2:
+        topic_name: '/cloud1'
+        stall_monitor_hz: 15.0
+        stall_timeout_sec: 1.0
+      input3:
+        topic_name: '/cloud2'
+        stall_monitor_hz: 10.0
+        stall_timeout_sec: 1.0
+
+    # 出力タイミングに使うトピックを決める
+    # 複数設定しても構わないが負荷を気にしよう
+    trigger:
+      trigger1:
+        topic_name: '/cloud0'
+    # trigger2:
+    #   topic_name: '/cloud1'
+
+    # 出力名やframe_id
+    # どの座標基準でマージするのかどうかが決まる
+    output:
+      topic_name: /merged_cloud
+      frame_id: some_transform

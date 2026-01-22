@@ -1,0 +1,21 @@
+merger_test:
+  ros__parameters:
+    valid_param:
+      topic_name: "/merged_cloud"
+      frame_id: "map"
+    topic_name_not_found:
+      frame_id: "map"
+    topic_name_empty:
+      topic_name: ""
+      frame_id: "map"
+    topic_name_invalid_type:
+      topic_name: 1234
+      frame_id: "map"
+    frame_id_not_found:
+      topic_name: "/merged_cloud"
+    frame_id_empty:
+      topic_name: "/merged_cloud"
+      frame_id: ""
+    frame_id_invalid_type:
+      topic_name: "/merged_cloud"
+      frame_id: 1234

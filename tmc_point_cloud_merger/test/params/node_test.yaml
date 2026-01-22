@@ -1,0 +1,59 @@
+point_cloud_merger_node_test:
+  ros__parameters:
+    valid_param:
+      inputs:
+        input1:
+          topic_name: '/camera0/points'
+          stall_monitor_hz: 20.0
+          stall_timeout_sec: 1.0
+        input2:
+          topic_name: '/camera1/points'
+          stall_monitor_hz: 15.0
+          stall_timeout_sec: 1.0
+        input3:
+          topic_name: '/camera2/points'
+          stall_monitor_hz: 10.0
+          stall_timeout_sec: 1.0
+      trigger:
+        trigger1:
+          topic_name: '/camera0/points'
+      output:
+        topic_name: /merged_cloud
+        frame_id: map
+    no_input:
+      trigger:
+        trigger1:
+          topic_name: '/camera0/points'
+      output:
+        topic_name: /merged_cloud
+        frame_id: map
+    no_trigger:
+      inputs:
+        input1:
+          topic_name: '/camera0/points'
+          stall_monitor_hz: 20.0
+          stall_timeout_sec: 1.0
+      output:
+        topic_name: /merged_cloud
+        frame_id: map
+    no_output:
+      inputs:
+        input1:
+          topic_name: '/camera0/points'
+          stall_monitor_hz: 20.0
+          stall_timeout_sec: 1.0
+      trigger:
+        trigger1:
+          topic_name: '/camera0/points'
+    include_invalid_type:
+      inputs:
+        input1:
+          topic_name: 10000
+          stall_monitor_hz: 20.0
+          stall_timeout_sec: 1.0
+      trigger:
+        trigger1:
+          topic_name: '/camera0/points'
+      output:
+        topic_name: /merged_cloud
+        frame_id: map
