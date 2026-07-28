@@ -25,53 +25,28 @@ LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
 OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
 DAMAGE.
 */
-/// @file     named_topic_map.hpp
-/// @brief    Manage named PointClouds with a map and expose necessary interfaces
-/// @author   Fukukazu Kawata
-#ifndef TMC_POINT_CLOUD_MERGER_NAMED_TOPIC_MAP_HPP_
-#define TMC_POINT_CLOUD_MERGER_NAMED_TOPIC_MAP_HPP_
-#include <functional>
-#include <map>
-#include <memory>
-#include <string>
+/// @file     macros.hpp
+/// @brief    Header containing macros
+/// @author   Kiyohiro Sogen
 
-#include "type.hpp"
+#ifndef TMC_POINT_CLOUD_UTIL_MACROS_HPP_
+#define TMC_POINT_CLOUD_UTIL_MACROS_HPP_
 
-namespace tmc_point_cloud_merger {
+#include <rclcpp/rclcpp.hpp>
 
+#define PCU_ERROR(s) \
+  RCLCPP_ERROR(rclcpp::get_logger("point_cloud_util"), "[%s(%d)] %s", __FILE__, __LINE__, (s));
+#define PCU_WARN(s) \
+  RCLCPP_WARN(rclcpp::get_logger("point_cloud_util"), "[%s(%d)] %s", __FILE__, __LINE__, (s));
+#define PCU_INFO(s) \
+  RCLCPP_INFO(rclcpp::get_logger("point_cloud_util"), "[%s(%d)] %s", __FILE__, __LINE__, (s));
+#define PCU_THROW_RUNTIME_ERROR(s) \
+  std::ostringstream stream;\
+  stream << "[" << __FILE__ << "(" << __LINE__ << ")]" << (s);\
+  throw std::runtime_error(stream.str());
+#define PCU_THROW_INVALID_ARGUMENT(s) \
+  std::ostringstream stream;\
+  stream << "[" << __FILE__ << "(" << __LINE__ << ")]" << (s);\
+  throw std::invalid_argument(stream.str());
 
-// Manage messages with data and names
-// Allow addition and deletion
-// Notify the upper layer when changes occur
-class NamedTopicMap {
- public:
-  using SharedPtr = std::shared_ptr<NamedTopicMap>;
-  using Subject = std::map<std::string, Message::ConstSharedPtr>;
-  using CallbackType = std::function<void(const Subject)>;
-
-  explicit NamedTopicMap(CallbackType callback) : callback_(callback) {}
-
-  void UpdateMessage(const std::string& topic_name, const Message::ConstSharedPtr msg) {
-    if (topic_name.empty() || msg == nullptr) return;
-    // If the key does not exist, it will be added
-    msg_by_name_[topic_name] = msg;
-    callback_(msg_by_name_);
-  }
-
-  void EraseMessageByKey(const std::string& topic_name) {
-    // Ignore if a non-existent key is specified, as it is meaningless
-    if (topic_name.empty() || msg_by_name_.count(topic_name) == 0) {
-      return;
-    }
-    msg_by_name_.erase(topic_name);
-    callback_(msg_by_name_);
-  }
-
- private:
-  CallbackType callback_;
-  Subject msg_by_name_;
-};
-
-}  // end of namespace tmc_point_cloud_merger
-
-#endif  // TMC_POINT_CLOUD_MERGER_NAMED_TOPIC_MAP_HPP_
+#endif  // TMC_POINT_CLOUD_UTIL_MACROS_HPP_

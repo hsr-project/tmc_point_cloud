@@ -26,7 +26,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
 DAMAGE.
 */
 /// @file     subscriber.hpp
-/// @brief    Subscriber with communication status monitoring function
+/// @brief    Subscriber with communication status monitoring functionality
 /// @author   Fukukazu Kawata
 #ifndef TMC_POINT_CLOUD_MERGER_SUBSCRIBER_HPP_
 #define TMC_POINT_CLOUD_MERGER_SUBSCRIBER_HPP_
@@ -46,13 +46,13 @@ using std::chrono::milliseconds;
 using std::placeholders::_1;
 
 // Subscribe to messages and relay them to the upper layer
-// Also relay to the upper layer when message updates are interrupted
+// Notify the upper layer even when message updates are interrupted
 class Subscriber {
  public:
   using SharedPtr = std::shared_ptr<Subscriber>;
   // Receive event function type
   using UpdateCallbackType = std::function<void(const std::string&, const Message::ConstSharedPtr)>;
-  // Function type for when messages stop coming
+  // Function type for when messages stop arriving
   using StallCallbackType = std::function<void(const std::string&)>;
 
   static SharedPtr Create(const rclcpp::Node::SharedPtr node,
@@ -73,7 +73,7 @@ class Subscriber {
             update_callback, stall_callback));
   }
 
-  // Starting the subscriber, etc.
+  // Subscriber activation, etc.
   Subscriber(const rclcpp::Node::SharedPtr node,
       const std::string& topic_name,
       const double stall_monitor_hz,
@@ -92,7 +92,7 @@ class Subscriber {
     if (stall_monitor_hz < 1.0e-5) {
       throw std::invalid_argument("Specfied rate is very small");
     }
-    // Extremely small timeouts are not allowed as they cause stall events to be issued excessively
+    // Extremely small timeouts are not allowed as they cause frequent stall events
     if (stall_timeout_ < rclcpp::Duration::from_seconds(1.0e-5)) {
       throw std::invalid_argument("Specfied timeout is very small");
     }
@@ -115,7 +115,7 @@ class Subscriber {
   void UpdateStamp() {
     if (latest_stamp_ == rclcpp::Time(0, 0, RCL_ROS_TIME)) {
       auto clock = node_->get_clock();
-      RCLCPP_INFO_THROTTLE(rclcpp::get_logger("point_cloud_merger"), *clock, 1000,
+      RCLCPP_INFO_THROTTLE(rclcpp::get_logger("point_cloud_merger"), *clock, 5000,
           "Waiting for first message: %s", topic_name_.c_str());
       return;
     }

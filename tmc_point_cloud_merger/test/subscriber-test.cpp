@@ -26,7 +26,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
 DAMAGE.
 */
 /// @file     subscriber-test.cpp
-/// @brief    Test of the Subscriber class
+/// @brief    Test for the Subscriber class
 /// @author   Fukukazu Kawata
 #include <deque>
 #include <functional>
@@ -49,7 +49,7 @@ const double kEpsilon = 1e-6;
 
 namespace tmc_point_cloud_merger {
 
-// Class to bind to the Subscriber's callback and verify the artifacts
+// A class bound to the Subscriber's callback to verify the output
 class Observer {
  public:
   Observer() = default;
@@ -81,7 +81,7 @@ class SubscriberTest : public testing::Test {
   void SetUp() override {
     rclcpp::init(0, nullptr);
 
-    // Generate test node
+    // Generate a test node
     rclcpp::NodeOptions options;
     options.allow_undeclared_parameters(true);
     test_node_ = std::make_shared<rclcpp::Node>("subscriber_test", options);
@@ -136,7 +136,7 @@ TEST_F(SubscriberTest, CreateFunctionOK) {
   // exercise
   ASSERT_NO_THROW(init());
 
-  // Get the list of topics the node subscribes to
+  // Retrieve the list of topics the node subscribes to
   auto topics = GetSubscribedNodeTopics(test_node_);
 
   // verify
@@ -146,7 +146,7 @@ TEST_F(SubscriberTest, CreateFunctionOK) {
   EXPECT_STREQ("/parameter_events", topics[1].c_str());
 }
 
-// Cannot be instantiated if there are invalid parameters on the parameter server
+// Cannot be instantiated if invalid parameters exist on the parameter server
 TEST_F(SubscriberTest, CreateFunctionNG) {
   // setup
   std::vector<std::string> invalid_group_names {
@@ -186,7 +186,7 @@ TEST_F(SubscriberTest, ConstructorOK) {
       std::bind(&Observer::UpdateCallback, &obs_, std::placeholders::_1, std::placeholders::_2),
       std::bind(&Observer::StallCallback, &obs_, std::placeholders::_1))));
 
-  // Get the list of topics the node subscribes to
+  // Retrieve the list of topics the node subscribes to
   auto topics = GetSubscribedNodeTopics(test_node_);
 
   // verify
@@ -196,7 +196,7 @@ TEST_F(SubscriberTest, ConstructorOK) {
   EXPECT_STREQ("/some_topic", topics[1].c_str());
 }
 
-// Cannot be instantiated if invalid parameters are given
+// Cannot be instantiated if invalid parameters are provided
 TEST_F(SubscriberTest, ConstructorNG) {
   struct Param {
     std::string topic_name;
@@ -222,7 +222,7 @@ TEST_F(SubscriberTest, ConstructorNG) {
   }
 }
 
-// Message update event is issued
+// A message update event is issued
 TEST_F(SubscriberTest, CanNotifyUserOfMessageUpdate) {
   // setup
   NodesLaunch();
@@ -237,8 +237,8 @@ TEST_F(SubscriberTest, CanNotifyUserOfMessageUpdate) {
   ASSERT_TRUE(WaitUntil([&]() {return pub_->get_subscription_count() != 0;}, 3.0));
 
   // exercise
-  // An event should be triggered with each data reception
-  // Assign values to points according to the number of topics (0.0 -> 1.0 -> 2.0)
+  // An event should be triggered for each data reception
+  // Assign values to points based on the number of topics (0.0 -> 1.0 -> 2.0)
   for (int topic_id = 0; topic_id < 3; ++topic_id) {
     double v = static_cast<double>(topic_id);
     Message msg = CreateTestPointCloud(rclcpp::Clock(RCL_ROS_TIME).now(), "some_link", v, v, v);
@@ -275,9 +275,9 @@ TEST_F(SubscriberTest, CanNotifyUserOfMessageStalling) {
   Message msg = CreateTestPointCloud(rclcpp::Clock(RCL_ROS_TIME).now(), "some_link", 1.0, 1.0, 1.0);
 
   // exercise
-  // The monitor is activated when the subscriber is instantiated
-  // If no messages have arrived, initialization is not complete, so do nothing
-  // Once a message arrives, it starts checking for possible communication interruptions
+  // The monitor is active as soon as the subscriber is instantiated
+  // If no messages have arrived, initialization is incomplete and nothing happens
+  // Once a message arrives, it starts checking for potential communication stalls
   // Verify that behavior
   ASSERT_FALSE(WaitUntil([&]() {return obs_.GetStallEventCount() != 0;}, 1.0));
   pub_->publish(msg);

@@ -45,7 +45,7 @@ DAMAGE.
 
 namespace tmc_point_cloud_merger {
 
-// Connect callbacks of each class and expose functionality as a ROS node as a merger
+// Connect callbacks of each class and expose functionality as a ROS node for the merger
 class PointCloudMergerNode : public rclcpp::Node {
  public:
   explicit PointCloudMergerNode(const rclcpp::NodeOptions& options)

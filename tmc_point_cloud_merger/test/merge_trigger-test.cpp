@@ -45,7 +45,7 @@ DAMAGE.
 
 namespace tmc_point_cloud_merger {
 
-// Observer to obtain deliverables
+// Observer to obtain the product
 class Observer {
  public:
   Observer() = default;
@@ -134,7 +134,7 @@ TEST_F(CreateFunctionTest, FailedToCreate) {
   }
 }
 
-// Test parameters for the constructor
+// Constructor test parameters
 struct ConstructorTestParam {
   std::vector<std::string> topic_names;
 };
@@ -209,7 +209,7 @@ class BehaviorTest : public testing::Test {
   Observer obs_;
 };
 
-// Should ignore even if given an empty map
+// Should ignore even if an empty map is provided
 TEST_F(BehaviorTest, CanIgnoreEmptyFrame) {
   // setup
   MergeTrigger::Subject subject;
@@ -221,7 +221,7 @@ TEST_F(BehaviorTest, CanIgnoreEmptyFrame) {
   ASSERT_EQ(0, obs_.GetCallbackCount());
 }
 
-// Verify response containing the specified topic
+// Confirm response containing the specified topic
 TEST_F(BehaviorTest, ExpectedIgnoreAndNotification) {
   // setup
   MergeTrigger::Subject some_frame {
@@ -246,7 +246,7 @@ TEST_F(BehaviorTest, ExpectedIgnoreAndNotification) {
   const int first_event_count = obs_.GetCallbackCount();
   RCLCPP_INFO(rclcpp::get_logger(""), "%d", first_event_count);
 
-  // Is the target, so notification occurs (count += 1)
+  // Is the target, so notified (count += 1)
   merge_trigger_->UpdateMessageFrame(target_frame);
   const int second_event_count = obs_.GetCallbackCount();
   RCLCPP_INFO(rclcpp::get_logger(""), "%d", second_event_count);
@@ -256,7 +256,7 @@ TEST_F(BehaviorTest, ExpectedIgnoreAndNotification) {
   const int third_event_count = obs_.GetCallbackCount();
   RCLCPP_INFO(rclcpp::get_logger(""), "%d", third_event_count);
 
-  // Is the target and the stamp is updated, so notification occurs
+  // Is the target, and the stamp is updated, so notified
   merge_trigger_->UpdateMessageFrame(target_frame_updated);
   const int final_event_count = obs_.GetCallbackCount();
   RCLCPP_INFO(rclcpp::get_logger(""), "%d", final_event_count);

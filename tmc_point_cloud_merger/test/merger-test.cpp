@@ -26,7 +26,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
 DAMAGE.
 */
 /// @file     merger-test.cpp
-/// @brief    Test of the MergedCloudPublisher class
+/// @brief    Test for MergedCloudPublisher class
 /// @author   Fukukazu Kawata
 
 #include <string>
@@ -44,7 +44,7 @@ DAMAGE.
 #include "utils.hpp"
 
 namespace {
-// Expected point_step (number of bytes representing one point) for the converted Message type
+// Expected point_step for the converted Message type (=byte size representing one point)
 constexpr uint8_t kPointStep = 16;
 }  // anonymous namespace
 
@@ -233,7 +233,7 @@ INSTANTIATE_TEST_CASE_P(
     {{"any_topic_name", Message::ConstSharedPtr(new Message(CreateTestPointCloud(
       rclcpp::Clock(RCL_ROS_TIME).now(), "s0", 1.0, 0.0, 0.0, 0.6)))}},
     {Point{1.7071067811865476, 0.2928932188134524, 0.0}}},
-    // Three-item set - XYZ, XYZ, XYZ
+    // Combination of 3 items - XYZ, XYZ, XYZ
     MergeBehaviorTestParam{
     {{"any_topic_name", Message::ConstSharedPtr(new Message(CreateTestPointCloud(
         rclcpp::Clock(RCL_ROS_TIME).now(), "s0", 1.0, 0.0, 0.0)))},
@@ -244,7 +244,7 @@ INSTANTIATE_TEST_CASE_P(
     {Point{1.7071067811865476, 0.2928932188134524, 0.0},
       Point{2.0, 0.0, 0.0},
       Point{1.7071067811865476, -0.2928932188134524, 0.0}}},
-    // Three-item set - XYZRGB, XYZRGB, XYZRGB
+    // Combination of 3 items - XYZRGB, XYZRGB, XYZRGB
     MergeBehaviorTestParam{
     {{"any_topic_name", Message::ConstSharedPtr(new Message(CreateTestPointCloud(
         rclcpp::Clock(RCL_ROS_TIME).now(), "s0", 1.0, 0.0, 0.0, 0, 128, 255)))},
@@ -255,7 +255,7 @@ INSTANTIATE_TEST_CASE_P(
     {Point{1.7071067811865476, 0.2928932188134524, 0.0},
       Point{2.0, 0.0, 0.0},
       Point{1.7071067811865476, -0.2928932188134524, 0.0}}},
-    // Three-item set - XYZ, XYZRGB, XYZRGB
+    // Combination of 3 items - XYZ, XYZRGB, XYZRGB
     MergeBehaviorTestParam{
     {{"any_topic_name", Message::ConstSharedPtr(new Message(CreateTestPointCloud(
         rclcpp::Clock(RCL_ROS_TIME).now(), "s0", 1.0, 0.0, 0.0)))},
@@ -266,7 +266,7 @@ INSTANTIATE_TEST_CASE_P(
     {Point{1.7071067811865476, 0.2928932188134524, 0.0},
       Point{2.0, 0.0, 0.0},
       Point{1.7071067811865476, -0.2928932188134524, 0.0}}},
-    // Three-item set - XYZRGB, XYZ, XYZRGB
+    // Combination of 3 items - XYZRGB, XYZ, XYZRGB
     MergeBehaviorTestParam{
     {{"any_topic_name", Message::ConstSharedPtr(new Message(CreateTestPointCloud(
         rclcpp::Clock(RCL_ROS_TIME).now(), "s0", 1.0, 0.0, 0.0, 0, 128, 255)))},
@@ -277,7 +277,7 @@ INSTANTIATE_TEST_CASE_P(
     {Point{1.7071067811865476, 0.2928932188134524, 0.0},
       Point{2.0, 0.0, 0.0},
       Point{1.7071067811865476, -0.2928932188134524, 0.0}}},
-    // Three-item set - XYZRGB, XYZRGB, XYZ
+    // Combination of 3 items - XYZRGB, XYZRGB, XYZ
     MergeBehaviorTestParam{
     {{"any_topic_name", Message::ConstSharedPtr(new Message(CreateTestPointCloud(
         rclcpp::Clock(RCL_ROS_TIME).now(), "s0", 1.0, 0.0, 0.0, 0, 128, 255)))},
@@ -288,7 +288,7 @@ INSTANTIATE_TEST_CASE_P(
     {Point{1.7071067811865476, 0.2928932188134524, 0.0},
       Point{2.0, 0.0, 0.0},
       Point{1.7071067811865476, -0.2928932188134524, 0.0}}},
-    // Three-item set - XYZRGB, XYZI, XYZ
+    // Combination of 3 items - XYZRGB, XYZI, XYZ
     MergeBehaviorTestParam{
     {{"any_topic_name", Message::ConstSharedPtr(new Message(CreateTestPointCloud(
         rclcpp::Clock(RCL_ROS_TIME).now(), "s0", 1.0, 0.0, 0.0, 0, 128, 255)))},
