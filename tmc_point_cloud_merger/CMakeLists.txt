@@ -9,6 +9,7 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 endif()
 
 # Dependencies
+find_package(ament_index_cpp REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(pcl_conversions REQUIRED)
 find_package(pcl_ros REQUIRED)
@@ -21,6 +22,7 @@ find_package(tf2_ros REQUIRED)
 # Set
 set(executable_name point_cloud_merger)
 set(dependencies
+  ament_index_cpp
   geometry_msgs
   pcl_conversions
   pcl_ros

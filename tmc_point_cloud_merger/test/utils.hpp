@@ -26,7 +26,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
 DAMAGE.
 */
 /// @file     utils.hpp
-/// @brief    Classes mainly for increasing the reliability of node tests
+/// @brief    Classes primarily aimed at increasing the reliability of node tests
 /// @author   Fukukazu Kawata
 #include <deque>
 #include <functional>
@@ -49,7 +49,7 @@ namespace tmc_point_cloud_merger {
 using WaitFunctionType = std::function<bool ()>;
 
 bool WaitUntil(WaitFunctionType condition_function, double timeout_sec, double rate_hz = 100.0) {
-  // Error checking of arguments
+  // Error checking for arguments
   if (!condition_function) {
     throw std::invalid_argument("Function for waiting is empty.");
   }
@@ -74,7 +74,7 @@ bool WaitUntil(WaitFunctionType condition_function, double timeout_sec, double r
   return false;
 }
 
-// Load parameters from yaml file
+// Load parameters from a yaml file
 void LoadParameterFromYaml(std::shared_ptr<rclcpp::Node> node,
   const std::string& yaml_directory, const std::string& yaml_name) {
   const std::string yaml_path = yaml_directory + yaml_name;
@@ -87,7 +87,7 @@ void LoadParameterFromYaml(std::shared_ptr<rclcpp::Node> node,
   try {
     rclcpp::ParameterMap yaml_param_map = rclcpp::parameter_map_from(yaml_params);
     rcl_yaml_node_struct_fini(yaml_params);
-    // Set ros parameters to node
+    // Set ROS parameters to the node
     const std::string parameter_space = "/" + std::string(node->get_name());
     auto iter = yaml_param_map.find(parameter_space);
     for (auto& param : iter->second) {
@@ -188,7 +188,7 @@ class CyclicMessagePublisher {
 };
 
 
-// message_filters::Cache doesn't reach the itchy spots, so don't use it
+// Avoid using message_filters::Cache as it doesn't address specific needs
 template<typename MessageT>
 class CacheSubscriber {
  public:

@@ -26,7 +26,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
 DAMAGE.
 */
 /// @file     node-test.cpp
-/// @brief    Test of Node class
+/// @brief    Test for Node class
 /// @author   Fukukazu Kawata
 
 #include <string>
@@ -61,7 +61,7 @@ class NodeTest : public ::testing::Test {
   void SetUp() override {
     rclcpp::init(0, nullptr);
 
-    // Test node generation
+    // Generate test node
     rclcpp::NodeOptions options;
     options.allow_undeclared_parameters(true);
     test_node_ = std::make_shared<rclcpp::Node>("point_cloud_merger_node_test", options);
@@ -70,7 +70,7 @@ class NodeTest : public ::testing::Test {
       ament_index_cpp::get_package_share_directory("tmc_point_cloud_merger") + "/test/params/",
       "node_test.yaml");
 
-    // Static TF issuance
+    // Publish static TF
     tf_broadcaster_ = std::make_shared<tf2_ros::StaticTransformBroadcaster>(test_node_);
     SendStaticTransforms();
   }
@@ -162,7 +162,7 @@ class NodeTest : public ::testing::Test {
   std::shared_ptr<std::thread> executor_thread_;
 };
 
-// Load succeeds if parameters are valid
+// Load succeeds with valid parameters
 TEST_F(NodeTest, CanLoaded) {
   // setup
   rclcpp::NodeOptions options;
@@ -173,7 +173,7 @@ TEST_F(NodeTest, CanLoaded) {
   EXPECT_NO_THROW(point_cloud_merger_node_->Init());
 }
 
-// Test parameters for constructor
+// Constructor test parameters
 class InitNodeTest
   : public NodeTest, public testing::WithParamInterface<std::string> {};
 
@@ -214,13 +214,13 @@ TEST_F(NodeTest, CanInputVariousNumberOfMessages) {
   EXPECT_STREQ("/parameter_events", topics[3].c_str());
 }
 
-// Can publish properly merged artifacts, and their values are reliable
+// Can publish properly merged results, and the values are accurate
 TEST_F(NodeTest, CanMergeCloudsWithCorrectTransformation) {
   // Test data transmitter
   std::vector<CyclicMessagePublisher<Message>::SharedPtr> pubs;
   GeneratePublishers(test_node_->shared_from_this(), pubs);
 
-  // Artifact buffer
+  // Output buffer
   auto queue = CacheSubscriber<Message>(test_node_->shared_from_this(), "merged_cloud");
 
   // Execute Executor
@@ -233,7 +233,7 @@ TEST_F(NodeTest, CanMergeCloudsWithCorrectTransformation) {
     Point {1.7071067811865476, -0.2928932188134524, 0.0}};
 
   // exercise
-  // Launch three Publishers and input to the target
+  // Launch three publishers and input to the target
   // Obtain the latest value when sufficient data is collected
   ASSERT_TRUE(WaitUntil([&]() {
       for (auto pub : pubs) {
@@ -263,16 +263,16 @@ TEST_F(NodeTest, CanMergeCloudsWithCorrectTransformation) {
 
   // verify
   EXPECT_EQ(merged_msg.header.frame_id, "map");
-  EXPECT_EQ(merged_p.points.size(), 3);  // Input is made to result in a total of 3 points
-  for (int i = 0; i < 3; ++i) {  // Since processing is done in order from camera0, the order of points is determined by it
+  EXPECT_EQ(merged_p.points.size(), 3);  // Input is designed to result in 3 points
+  for (int i = 0; i < 3; ++i) {  // Processed sequentially from camera0, so the order of points is determined accordingly
     EXPECT_NEAR(merged_p.points[i].x, expected_points[i].x, kEpsilon);
     EXPECT_NEAR(merged_p.points[i].y, expected_points[i].y, kEpsilon);
     EXPECT_NEAR(merged_p.points[i].z, expected_points[i].z, kEpsilon);
   }
 }
 
-// Stop one message from the middle
-// Confirm that it is excluded from the artifact
+// Stop one message midway
+// Confirm that it is excluded from the results
 TEST_F(NodeTest, CanDropStalledDataFromTargets) {
   // setup
   std::vector<CyclicMessagePublisher<Message>::SharedPtr> pubs;
@@ -284,9 +284,9 @@ TEST_F(NodeTest, CanDropStalledDataFromTargets) {
     Point {1.7071067811865476, -0.2928932188134524, 0.0}};
 
   // exercise
-  // Initially input data to the target with three Publishers
-  // After confirming that the merged data has become three, stop the output of only one Publisher
-  // Wait until the merged data becomes two, and obtain the latest data at that time
+  // Initially input data to the target with three publishers
+  // After confirming that the merged data becomes three, stop the output of one publisher
+  // Wait until the merged data becomes two, then obtain the latest data at that time
   ASSERT_TRUE(WaitUntil([&]() {
       for (auto pub : pubs) {
         if (!pub->IsSubscribed()) {return false;}
@@ -337,7 +337,7 @@ TEST_F(NodeTest, CanDropStalledDataFromTargets) {
   }
 }
 
-// Confirm that even if dropped once, it is properly merged if input resumes
+// Confirm that even if input is dropped once, it is properly merged when resumed
 TEST_F(NodeTest, CanRestoreDroppedNamedTopicWhenNewOneComes) {
   // setup
   std::vector<CyclicMessagePublisher<Message>::SharedPtr> pubs;
@@ -345,16 +345,16 @@ TEST_F(NodeTest, CanRestoreDroppedNamedTopicWhenNewOneComes) {
   auto queue = CacheSubscriber<Message>(test_node_->shared_from_this(), "merged_cloud");
   NodesLaunch();
 
-  // Position when each point is observed from the map
+  // Position observed from the map for each point
   std::vector<Point> expected_points {
     Point {1.7071067811865476, 0.2928932188134524, 0.0},
     Point {2.0, 0.0, 0.0},
     Point {1.7071067811865476, -0.2928932188134524, 0.0}};
 
   // exercise
-  // Initially input data to the target with three Publishers
-  // After confirming that the merged data has become three, stop the output of only one Publisher
-  // Wait until the merged data becomes two, and publish again with three Publishers
+  // Initially input data to the target with three publishers
+  // After confirming that the merged data becomes three, stop the output of one publisher
+  // Wait until the merged data becomes two, then resume publishing with three publishers
   // Obtain the latest value when sufficient data is collected
   ASSERT_TRUE(WaitUntil([&]() {
       for (auto pub : pubs) {
@@ -414,7 +414,7 @@ TEST_F(NodeTest, CanRestoreDroppedNamedTopicWhenNewOneComes) {
   }
 }
 
-// Do not output artifacts unless the topic specified as a trigger is input
+// Do not output results unless the topic specified as a trigger is input
 TEST_F(NodeTest, CanHushUpPublishingAsLongAsTriggerTopicIsStalled) {
   // setup
   std::vector<CyclicMessagePublisher<Message>::SharedPtr> pubs;
@@ -432,7 +432,7 @@ TEST_F(NodeTest, CanHushUpPublishingAsLongAsTriggerTopicIsStalled) {
   ASSERT_EQ(queue.GetQueueLength(), 0);
   queue.StartCaching();
   ASSERT_TRUE(WaitUntil([&]() {return queue.IsMessageAvailable();}, 0.5));
-  // Publish topics other than trigger
+  // Publish topics other than the trigger
   pubs[1]->StartPublishing<DummySensorTimeForward>(100.0);
   pubs[2]->StartPublishing<DummySensorTimeForward>(100.0);
 

@@ -26,7 +26,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
 DAMAGE.
 */
 /// @file point_cloud_merger_main.cpp
-/// @brief Main function for point cloud synthesis
+/// @brief Main functionality for point cloud synthesis
 #include <memory>
 #include <rclcpp/rclcpp.hpp>
 

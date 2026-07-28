@@ -26,7 +26,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
 DAMAGE.
 */
 /// @file     merger.hpp
-/// @brief    Convert multiple obtained point clouds to the reference coordinate system, then merge and publish them
+/// @brief    Convert multiple obtained point clouds to the reference coordinate system and merge them for publishing
 /// @author   Fukukazu Kawata
 #ifndef TMC_POINT_CLOUD_MERGER_MERGER_HPP_
 #define TMC_POINT_CLOUD_MERGER_MERGER_HPP_
@@ -69,7 +69,7 @@ class MergedCloudPublisher {
     const rclcpp::Node::SharedPtr node,
     const std::string& topic_name, const std::string& frame_id)
   : frame_id_(frame_id) {
-    // Publisher does not provide any information if it's an empty string
+    // Publisher provides no feedback when the string is empty
     if (topic_name.empty()) {
       throw std::invalid_argument("Specified topic name is empty");
     }
@@ -84,15 +84,15 @@ class MergedCloudPublisher {
 
   // Transform coordinates based on the frame_id specified in the member and merge/publish
   void MergeAndPublish(const Subject& frame) {
-    // No work if it's empty
+    // No work if empty
     if (frame.empty()) {
       RCLCPP_WARN(rclcpp::get_logger("point_cloud_merger"), "Input frame has no data");
       return;
     }
 
-    // Obtain and apply rigid body transformation to each sensor's relative reference frame_id
+    // Obtain and apply rigid transformations to the reference frame_id relative to each sensor
     std::vector<Message::SharedPtr> transformed_clouds;
-    // Could be written more coolly with C++17
+    // Can be written more coolly with C++17
     // TODO(fukukazu_kawata_zb) 並列化も視野に。
     for (auto it = frame.begin(); it != frame.end(); ++it) {
       if (it->second == nullptr) {
@@ -100,11 +100,11 @@ class MergedCloudPublisher {
         continue;
       }
       if (it->second->data.empty()) {
-        // Warning abolished as it's quite possible for the number of point clouds to become zero after filtering
+        // Warning removed as it's likely that the number of points in the cloud becomes zero after filtering
         // RCLCPP_WARN(rclcpp::get_logger("point_cloud_merger"), "No points in: %s", it->first.c_str());
         continue;
       }
-      // If the specified frame_id is that of the sensor, proceed to the next step as is
+      // If the specified frame_id belongs to the sensor, proceed as is
       if ((it->second)->header.frame_id == frame_id_) {
         Message::SharedPtr c(new Message(*(it->second)));
         transformed_clouds.push_back(c);
@@ -151,9 +151,9 @@ class MergedCloudPublisher {
 
  private:
   // Wrapper for pcl::concatenatePointCloud
-  // If it's designed to always require three objects for synthesis,
-  // You need to implement a recursive function to ultimately synthesize into a single data
-  // Make it two inputs for a simple for loop, with one returning the merged data
+  // If the design requires exactly three objects for synthesis,
+  // Recursive functions must be implemented to ultimately synthesize into a single dataset
+  // Simplify to two inputs for looping with 'for', returning merged data for one of them
   void MergeTwoCloudsIntoOne(const Message::SharedPtr in, Message::SharedPtr& inout) {
     Message::SharedPtr out(new Message());
     pcl::concatenatePointCloud(*inout, *in, *out);
@@ -174,12 +174,12 @@ class MergedCloudPublisher {
       return in;
     }
 
-    // Filtering can be done by transforming while ignoring elements other than x, y, z
+    // Filtering is done by ignoring elements other than x, y, z during conversion
     pcl::PointCloud<Point> pc;
     pcl::fromROSMsg<Point>(*in, pc);
     Message::SharedPtr out(new Message());
     pcl::toROSMsg<Point>(pc, *out);
-    // In pcl transformation, the timestamp precision decreases, so reinsert it
+    // Reinsert the timestamp as its precision decreases during pcl transformation
     out->header = in->header;
 
     return out;

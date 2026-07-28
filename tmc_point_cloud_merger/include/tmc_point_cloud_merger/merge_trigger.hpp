@@ -44,7 +44,7 @@ DAMAGE.
 
 namespace tmc_point_cloud_merger {
 
-// Notifies the upper layer when the topic with the specified name is updated
+// Notifies upstream when the specified topic name is updated
 // Also notifies when there is a change in the number of types of data being handled
 class MergeTrigger {
  public:
@@ -96,24 +96,24 @@ class MergeTrigger {
   }
 
   void UpdateMessageFrame(const Subject& frame) {
-    // If not initialized and the input is empty, there is no work
+    // If not initialized and the input is empty, there is no task
     if (frame.empty() && latest_frame_.empty()) {
       return;
     }
 
-    // Notifies when the data of the specified topic name is updated
-    // Relies on the timestamp
+    // Notifies when the data for the specified topic name is updated
+    // Relies on timestamps
     for (auto topic_name : topic_names_) {
       try {
-        // Notifies anyway when a trigger is received for the first time
-        // From then on, it determines whether it has been updated by checking the timestamp
+        // Always notifies when a trigger is received for the first time
+        // Subsequently, determines whether to notify based on whether the timestamp has been updated
         if (latest_frame_.find(topic_name) == latest_frame_.end() && frame.find(topic_name) != frame.end()) {
           latest_frame_ = frame;
           callback_(latest_frame_);
           return;
         }
         // Existence check runs with .at
-        // Exception if not found
+        // Throws an exception if not found
         if (rclcpp::Time(frame.at(topic_name)->header.stamp) >
             rclcpp::Time(latest_frame_.at(topic_name)->header.stamp)) {
           latest_frame_ = frame;

@@ -26,7 +26,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
 DAMAGE.
 */
 /// @file     named_topic_map-test.cpp
-/// @brief    Test of the NamedTopicMap class
+/// @brief    Test for the NamedTopicMap class
 /// @author   Fukukazu Kawata
 #include <functional>
 #include <string>
@@ -41,7 +41,7 @@ DAMAGE.
 
 namespace tmc_point_cloud_merger {
 
-// Class to verify the artifacts output as a result of user operations
+// A class to verify the artifacts output as a result of user operations
 class Observer {
  public:
   Observer() = default;
@@ -68,7 +68,7 @@ TEST(NamedTopicMapTest, ConstructorOK) {
   ASSERT_TRUE(target != nullptr);
 }
 
-// Operations using an empty query can be ignored
+// Operations with an empty query can be ignored
 TEST(NamedTopicMapTest, CanIgnoreLackedQuery) {
   // setup
   Observer obs;
@@ -97,7 +97,7 @@ TEST(NamedTopicMapTest, CanIgnoreLackedQuery) {
   }
 }
 
-// Artifacts can be obtained when valid data is provided
+// Artifacts are obtained when valid data is provided
 TEST(NamedTopicMapTest, CanNotifyUserOfFrameUpdate) {
   // setup
   Observer obs;
@@ -125,7 +125,7 @@ TEST(NamedTopicMapTest, CanNotifyUserOfFrameUpdate) {
   EXPECT_NEAR(1.0, pc.points[0].z, 1e-5);
 }
 
-// Artifacts can be obtained even in the case of a delete operation, and it can be confirmed that the item is deleted
+// Artifacts are obtained for delete operations, and it can be confirmed that the data is deleted
 TEST(NamedTopicMapTest, CanNotifyUserOfFrameDeletion) {
   // setup
   Observer obs;
@@ -144,7 +144,7 @@ TEST(NamedTopicMapTest, CanNotifyUserOfFrameDeletion) {
   ASSERT_TRUE(subject.empty());
 }
 
-// Deletion of non-existent keys or queries with empty strings can be ignored
+// Deletion of non-existent keys or empty string queries can be ignored
 TEST(NamedTopicMapTest, CanIgnoreQueryThatNotExists) {
   // setup
   Observer obs;

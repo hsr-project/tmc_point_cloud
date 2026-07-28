@@ -25,53 +25,65 @@ LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
 OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
 DAMAGE.
 */
-/// @file     named_topic_map.hpp
-/// @brief    Manage named PointClouds with a map and expose necessary interfaces
-/// @author   Fukukazu Kawata
-#ifndef TMC_POINT_CLOUD_MERGER_NAMED_TOPIC_MAP_HPP_
-#define TMC_POINT_CLOUD_MERGER_NAMED_TOPIC_MAP_HPP_
-#include <functional>
-#include <map>
+/// @file     types.hpp
+/// @brief    Common type definition header
+/// @author   Kiyohiro Sogen
+#ifndef TMC_POINT_CLOUD_UTIL_TYPES_HPP_
+#define TMC_POINT_CLOUD_UTIL_TYPES_HPP_
+
 #include <memory>
-#include <string>
+#include <vector>
+#include <Eigen/Dense>
+#include <sensor_msgs/msg/point_cloud2.hpp>
 
-#include "type.hpp"
+namespace tmc_point_cloud_util {
 
-namespace tmc_point_cloud_merger {
+/// Point cloud index
+using Indices = std::vector<int32_t>;
+using IndicesPtr = std::shared_ptr<Indices>;
+using IndicesConstPtr = std::shared_ptr<const Indices>;
 
+/// Model parameters
+typedef Eigen::VectorXd ModelCoefficients;
+/// PointCloud2
+using PointCloud2 = sensor_msgs::msg::PointCloud2;
+using PointCloud2Ptr = sensor_msgs::msg::PointCloud2::SharedPtr;
+using PointCloud2ConstPtr = sensor_msgs::msg::PointCloud2::ConstSharedPtr;
 
-// Manage messages with data and names
-// Allow addition and deletion
-// Notify the upper layer when changes occur
-class NamedTopicMap {
+/// @class Region
+/// @brief Region class
+class Region {
  public:
-  using SharedPtr = std::shared_ptr<NamedTopicMap>;
-  using Subject = std::map<std::string, Message::ConstSharedPtr>;
-  using CallbackType = std::function<void(const Subject)>;
+  /// @brief Constructor
+  Region() {}
+  /// @brief Constructor
+  /// @param[in] min_point Minimum value
+  /// @param[in] max_point Maximum value
+  Region(const Eigen::Vector3d& min_point,
+         const Eigen::Vector3d& max_point)
+      : min_point_(min_point),
+        max_point_(max_point) {}
 
-  explicit NamedTopicMap(CallbackType callback) : callback_(callback) {}
-
-  void UpdateMessage(const std::string& topic_name, const Message::ConstSharedPtr msg) {
-    if (topic_name.empty() || msg == nullptr) return;
-    // If the key does not exist, it will be added
-    msg_by_name_[topic_name] = msg;
-    callback_(msg_by_name_);
+  /// Accessor
+  Eigen::Vector3d min_point() const {
+    return min_point_;
   }
-
-  void EraseMessageByKey(const std::string& topic_name) {
-    // Ignore if a non-existent key is specified, as it is meaningless
-    if (topic_name.empty() || msg_by_name_.count(topic_name) == 0) {
-      return;
-    }
-    msg_by_name_.erase(topic_name);
-    callback_(msg_by_name_);
+  Eigen::Vector3d max_point() const {
+    return max_point_;
+  }
+  /// Mutator
+  void set_min_point(const Eigen::Vector3d& min_point) {
+    min_point_ = min_point;
+  }
+  void set_max_point(const Eigen::Vector3d& max_point) {
+    max_point_ = max_point;
   }
 
  private:
-  CallbackType callback_;
-  Subject msg_by_name_;
+  /// Minimum value
+  Eigen::Vector3d min_point_;
+  /// Maximum value
+  Eigen::Vector3d max_point_;
 };
-
-}  // end of namespace tmc_point_cloud_merger
-
-#endif  // TMC_POINT_CLOUD_MERGER_NAMED_TOPIC_MAP_HPP_
+}  // namespace tmc_point_cloud_util
+#endif  // TMC_POINT_CLOUD_UTIL_TYPES_HPP_

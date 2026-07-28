@@ -25,53 +25,32 @@ LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
 OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
 DAMAGE.
 */
-/// @file     named_topic_map.hpp
-/// @brief    Manage named PointClouds with a map and expose necessary interfaces
-/// @author   Fukukazu Kawata
-#ifndef TMC_POINT_CLOUD_MERGER_NAMED_TOPIC_MAP_HPP_
-#define TMC_POINT_CLOUD_MERGER_NAMED_TOPIC_MAP_HPP_
-#include <functional>
-#include <map>
-#include <memory>
-#include <string>
+/// @file     util.cpp
+/// @brief    Utility
+/// @author   Kiyohiro Sogen
 
-#include "type.hpp"
+#include <tmc_point_cloud_util/util.hpp>
 
-namespace tmc_point_cloud_merger {
+#include <limits>
 
+namespace tmc_point_cloud_util {
 
-// Manage messages with data and names
-// Allow addition and deletion
-// Notify the upper layer when changes occur
-class NamedTopicMap {
- public:
-  using SharedPtr = std::shared_ptr<NamedTopicMap>;
-  using Subject = std::map<std::string, Message::ConstSharedPtr>;
-  using CallbackType = std::function<void(const Subject)>;
-
-  explicit NamedTopicMap(CallbackType callback) : callback_(callback) {}
-
-  void UpdateMessage(const std::string& topic_name, const Message::ConstSharedPtr msg) {
-    if (topic_name.empty() || msg == nullptr) return;
-    // If the key does not exist, it will be added
-    msg_by_name_[topic_name] = msg;
-    callback_(msg_by_name_);
+/// Get the region of a box with size box_size centered at center
+void GetBoxRegion(const Eigen::Vector3d& center,
+                  const Eigen::Vector3d& box_size,
+                  Region& dst_region) {
+  if ((box_size[0] <= std::numeric_limits<double>::min()) ||
+      (box_size[1] <= std::numeric_limits<double>::min()) ||
+      (box_size[2] <= std::numeric_limits<double>::min())) {
+    PCU_THROW_RUNTIME_ERROR("box_size must be positive.");
   }
+  Eigen::Vector3d min_point;
+  min_point = center - box_size / 2.0;
+  dst_region.set_min_point(min_point);
 
-  void EraseMessageByKey(const std::string& topic_name) {
-    // Ignore if a non-existent key is specified, as it is meaningless
-    if (topic_name.empty() || msg_by_name_.count(topic_name) == 0) {
-      return;
-    }
-    msg_by_name_.erase(topic_name);
-    callback_(msg_by_name_);
-  }
+  Eigen::Vector3d max_point;
+  max_point = center + box_size / 2.0;
+  dst_region.set_max_point(max_point);
+}
 
- private:
-  CallbackType callback_;
-  Subject msg_by_name_;
-};
-
-}  // end of namespace tmc_point_cloud_merger
-
-#endif  // TMC_POINT_CLOUD_MERGER_NAMED_TOPIC_MAP_HPP_
+}  // namespace tmc_point_cloud_util
