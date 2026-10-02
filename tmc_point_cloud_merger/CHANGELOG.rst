@@ -7,10 +7,6 @@ Changelog for package tmc_point_cloud_merger
 * Migration to ROS2 jazzy
 * Contributors: Jongho Park, Katsushi Fukuoka
 
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Changelog for package tmc_point_cloud_merger
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
 2.0.0 (2026-01-22)
 -------------------
 * Migration to ROS2 humble
